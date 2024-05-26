@@ -1,50 +1,47 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Ship:
-    
-    # A manager for ship
-    
+
+class Ship(Sprite):
+    """A class to manage the ship."""
+
     def __init__(self, ai_game):
-        # initalize the ship and set start pos
-        
+        """Initialize the ship and set its starting position."""
+        super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
-        
-        
-        #load ship image and get the shape
-        
+
+        # Load the ship image and get its rect.
         self.image = pygame.image.load('img/ship.png')
         self.rect = self.image.get_rect()
-        
-        # start each new ship at bottom center of screen
+
+        # Start each new ship at the bottom center of the screen.
         self.rect.midbottom = self.screen_rect.midbottom
-        
-        # store a decimal value for the ship's horizental pos
+
+        # Store a decimal value for the ship's horizontal position.
         self.x = float(self.rect.x)
-        
-        # movement flag
+
+        # Movement flags.
         self.moving_right = False
         self.moving_left = False
-        
+
     def update(self):
-        # update ship's pos based on the flag of movement
+        """Update the ship's position based on the movement flags."""
         if self.moving_right and self.rect.right < self.screen_rect.right:
             self.x += self.settings.ship_speed
-            
-        
+
         if self.moving_left and self.rect.left > 0:
             self.x -= self.settings.ship_speed
-        
-        # UPDATE RECT OBJ FROM SELF.X
+
+        # Update the rect object from self.x.
         self.rect.x = self.x
-        
+
     def blitme(self):
-        # draw the ship at its current loc
-        
+        """Draw the ship at its current location."""
         self.screen.blit(self.image, self.rect)
 
     def center_ship(self):
-        # center ship on the screen
+        """Center the ship on the screen."""
         self.rect.midbottom = self.screen_rect.midbottom
         self.x = float(self.rect.x)
