@@ -1,23 +1,23 @@
 import pygame
 import random
 
-# screen settings
+# تنظیمات پنجره
 WIDTH, HEIGHT = 800, 600
 FPS = 30
 
-# rain drop settings
+# تنظیمات قطرات باران
 NUM_RAIN_DROPS = 50
 RAIN_DROP_SIZE = 3
 RAIN_DROP_COLOR = (150, 150, 255)
 MAX_SPEED = 5
 
-# Settings of Pygame
+# تنظیمات Pygame
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("باران")
 clock = pygame.time.Clock()
 
-# create raindrops
+# ایجاد قطرات باران
 rain_drops = []
 for _ in range(NUM_RAIN_DROPS):
     x = random.randint(0, WIDTH)
@@ -25,17 +25,17 @@ for _ in range(NUM_RAIN_DROPS):
     speed = random.randint(1, MAX_SPEED)
     rain_drops.append([x, y, speed])
 
-# main loop
+# حلقه اصلی برنامه
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # bg black
+    # پس زمینه را پاک می‌کنیم
     screen.fill((0, 0, 0))
 
-    # draw rain drops
+    # رسم قطرات باران
     all_drops_at_bottom = True  # شرطی برای بررسی اینکه آیا همه قطرات باران به پایین صفحه رسیده‌اند یا خیر
     for i in range(len(rain_drops)):
         pygame.draw.circle(screen, RAIN_DROP_COLOR, (rain_drops[i][0], rain_drops[i][1]), RAIN_DROP_SIZE)
