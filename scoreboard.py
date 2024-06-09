@@ -2,7 +2,6 @@ import pygame.font
 from pygame.sprite import Group
 from ship import Ship
 
-
 class Scoreboard:
     """A class to report scoring information."""
 
@@ -54,14 +53,13 @@ class Scoreboard:
 
     def prep_level(self):
         """Turn the level into a rendered image."""
-        # Round the level and format it
-        level = round(self.stats.level, -1)
-        level_str = "{:,}".format(level)
+        # تبدیل سطح به رشته
+        level_str = str(self.stats.level)
 
-        # Render the level image
+        # رسم تصویر سطح
         self.level_image = self.font.render(level_str, True, self.text_color, self.settings.bg_color)
 
-        # Position the level below the score
+        # موقعیت سطح زیر امتیاز
         self.level_rect = self.level_image.get_rect()
         self.level_rect.right = self.score_rect.right
         self.level_rect.top = self.score_rect.bottom + 10

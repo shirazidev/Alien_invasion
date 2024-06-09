@@ -9,7 +9,6 @@ from time import sleep
 from game_stats import GameStats
 from scoreboard import Scoreboard
 
-
 class AlienInvasion:
     """Overall class to manage game assets and behavior."""
 
@@ -72,6 +71,9 @@ class AlienInvasion:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+            # تمرین 3-1
+        elif event.key == pygame.K_p:  # Start the game when 'P' is pressed
+            self._start_game()
 
     def _check_keyup_events(self, event):
         """Respond to key releases."""
@@ -216,25 +218,29 @@ class AlienInvasion:
         """Start a new game when the player clicks Play."""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
-            # Reset the game settings and statistics
-            self.settings.initialize_dynamic_settings()
-            self.stats.reset_stats()
-            self.stats.game_active = True
+            self._start_game()
+    # 3-1
+    def _start_game(self):
+        """Start a new game when the player presses 'P' or clicks Play."""
+        # Reset the game settings and statistics
+        self.settings.initialize_dynamic_settings()
+        self.stats.reset_stats()
+        self.stats.game_active = True
 
-            # Prepare the scoreboard
-            self.sb.prep_score()
-            self.sb.prep_level()
-            self.sb.prep_high_score()
-            self.sb.prep_ships()
+        # Prepare the scoreboard
+        self.sb.prep_score()
+        self.sb.prep_level()
+        self.sb.prep_high_score()
+        self.sb.prep_ships()
 
-            # Clear the aliens and bullets, create a new fleet, and center the ship
-            self.aliens.empty()
-            self.bullets.empty()
-            self._create_fleet()
-            self.ship.center_ship()
+        # Clear the aliens and bullets, create a new fleet, and center the ship
+        self.aliens.empty()
+        self.bullets.empty()
+        self._create_fleet()
+        self.ship.center_ship()
 
-            # Hide the mouse cursor
-            pygame.mouse.set_visible(False)
+        # Hide the mouse cursor
+        pygame.mouse.set_visible(False)
 
 
 if __name__ == '__main__':
