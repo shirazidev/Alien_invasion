@@ -55,49 +55,48 @@ class AlienInvasion:
 
     # Inside the _check_difficulty_button method of AlienInvasion class
 
-    def _check_difficulty_button(self):
-        """Check for difficulty selection."""
-        if not self.stats.game_active:  # Only allow changing difficulty if the game is not active
-            mouse_pos = pygame.mouse.get_pos()
-            # Reset button colors
-            self.easy_button.set_selected_color(False)
-            self.medium_button.set_selected_color(False)
-            self.hard_button.set_selected_color(False)
-            # Check which button is clicked and set its color to red
-            if self.easy_button.rect.collidepoint(mouse_pos):
-                self.easy_button.set_selected_color(True)
-                if pygame.mouse.get_pressed()[0]:  # Check if left mouse button is pressed
-                    self.settings.difficulty = "easy"
-                    self.settings.set_difficulty()
-            elif self.medium_button.rect.collidepoint(mouse_pos):
-                self.medium_button.set_selected_color(True)
-                if pygame.mouse.get_pressed()[0]:  # Check if left mouse button is pressed
-                    self.settings.difficulty = "medium"
-                    self.settings.set_difficulty()
-            elif self.hard_button.rect.collidepoint(mouse_pos):
-                self.hard_button.set_selected_color(True)
-                if pygame.mouse.get_pressed()[0]:  # Check if left mouse button is pressed
-                    self.settings.difficulty = "hard"
-                    self.settings.set_difficulty()
-
     def _check_events(self):
         """Respond to keypresses and mouse events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.stats.save_high_score(self.stats.high_score)  # Save high score when quitting
+                self.stats.save_high_score(self.stats.high_score)
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
-                # Check difficulty button clicks
-                self._check_difficulty_button()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
-                    self.stats.save_high_score(self.stats.high_score)  # Save high score when quitting
+                    self.stats.save_high_score(self.stats.high_score)
                     sys.exit()
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
+
+        # Call _check_difficulty_button separately
+        self._check_difficulty_button()
+
+    def _check_difficulty_button(self):
+        """Check for difficulty selection."""
+        if not self.stats.game_active:
+            mouse_pos = pygame.mouse.get_pos()
+            self.easy_button.set_selected_color(False)
+            self.medium_button.set_selected_color(False)
+            self.hard_button.set_selected_color(False)
+            if self.easy_button.rect.collidepoint(mouse_pos):
+                self.easy_button.set_selected_color(True)
+                if pygame.mouse.get_pressed()[0]:
+                    self.settings.difficulty = "easy"
+                    self.settings.set_difficulty()
+            elif self.medium_button.rect.collidepoint(mouse_pos):
+                self.medium_button.set_selected_color(True)
+                if pygame.mouse.get_pressed()[0]:
+                    self.settings.difficulty = "medium"
+                    self.settings.set_difficulty()
+            elif self.hard_button.rect.collidepoint(mouse_pos):
+                self.hard_button.set_selected_color(True)
+                if pygame.mouse.get_pressed()[0]:
+                    self.settings.difficulty = "hard"
+                    self.settings.set_difficulty()
 
     def _check_keydown_events(self, event):
         """Respond to keypresses."""
