@@ -1,4 +1,5 @@
 import sys
+import json
 import pygame
 from settings import Settings
 from ship import Ship
@@ -8,6 +9,7 @@ from button import Button
 from time import sleep
 from game_stats import GameStats
 from scoreboard import Scoreboard
+
 
 class AlienInvasion:
     """Overall class to manage game assets and behavior."""
@@ -35,28 +37,64 @@ class AlienInvasion:
         # Create the fleet of aliens
         self._create_fleet()
 
-        # Make the play button
-        self.play_button = Button(self, "Play")
+        self.easy_button = Button(self, "Easy", (100, 100))
+        self.medium_button = Button(self, "Medium", (100, 200))
+        self.hard_button = Button(self, "Hard", (100, 300))
+        self.play_button = Button(self, "Play", (100, 400))
 
     def run_game(self):
         """Start the main loop for the game."""
         while True:
             self._check_events()
+            self._check_difficulty_button()
             if self.stats.game_active:
                 self.ship.update()
                 self._update_bullets()
                 self._update_aliens()
             self._update_screen()
 
+    # Inside the _check_difficulty_button method of AlienInvasion class
+
+    def _check_difficulty_button(self):
+        """Check for difficulty selection."""
+        if not self.stats.game_active:  # Only allow changing difficulty if the game is not active
+            mouse_pos = pygame.mouse.get_pos()
+            # Reset button colors
+            self.easy_button.set_selected_color(False)
+            self.medium_button.set_selected_color(False)
+            self.hard_button.set_selected_color(False)
+            # Check which button is clicked and set its color to red
+            if self.easy_button.rect.collidepoint(mouse_pos):
+                self.easy_button.set_selected_color(True)
+                if pygame.mouse.get_pressed()[0]:  # Check if left mouse button is pressed
+                    self.settings.difficulty = "easy"
+                    self.settings.set_difficulty()
+            elif self.medium_button.rect.collidepoint(mouse_pos):
+                self.medium_button.set_selected_color(True)
+                if pygame.mouse.get_pressed()[0]:  # Check if left mouse button is pressed
+                    self.settings.difficulty = "medium"
+                    self.settings.set_difficulty()
+            elif self.hard_button.rect.collidepoint(mouse_pos):
+                self.hard_button.set_selected_color(True)
+                if pygame.mouse.get_pressed()[0]:  # Check if left mouse button is pressed
+                    self.settings.difficulty = "hard"
+                    self.settings.set_difficulty()
+
     def _check_events(self):
         """Respond to keypresses and mouse events."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.stats.save_high_score(self.stats.high_score)  # Save high score when quitting
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                # Check difficulty button clicks
+                self._check_difficulty_button()
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    self.stats.save_high_score(self.stats.high_score)  # Save high score when quitting
+                    sys.exit()
                 self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
@@ -88,6 +126,11 @@ class AlienInvasion:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
+    def _save_high_score(self):
+        """Save the high score."""
+        if self.stats.score > self.stats.high_score:
+            self.stats.high_score = self.stats.score
+            self.stats.save_high_score(self.stats.high_score)
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
         self.bullets.update()
@@ -119,6 +162,8 @@ class AlienInvasion:
             self.stats.level += 1
             self.sb.prep_level()
 
+    # Inside the _update_screen method of AlienInvasion class
+
     def _update_screen(self):
         """Update images on the screen and flip to the new screen."""
         self.screen.fill(self.settings.bg_color)
@@ -128,9 +173,23 @@ class AlienInvasion:
         self.aliens.draw(self.screen)
         self.sb.show_score()
 
-        # Draw the play button if the game is inactive
+        # Draw the buttons
         if not self.stats.game_active:
+            self.easy_button.draw_button()
+            self.medium_button.draw_button()
+            self.hard_button.draw_button()
             self.play_button.draw_button()
+        else:
+            # Show only the selected difficulty button
+            if self.settings.difficulty == "easy":
+                self.easy_button.draw_button()
+            elif self.settings.difficulty == "medium":
+                self.medium_button.draw_button()
+            elif self.settings.difficulty == "hard":
+                self.hard_button.draw_button()
+            # Draw the play button if the game is inactive
+            if not self.stats.game_active:
+                self.play_button.draw_button()
 
         pygame.display.flip()
 
@@ -191,19 +250,22 @@ class AlienInvasion:
             # Decrement the number of ships left and update the scoreboard
             self.stats.ships_left -= 1
             self.sb.prep_ships()
-
             # Clear the aliens and bullets and create a new fleet
             self.aliens.empty()
             self.bullets.empty()
             self._create_fleet()
             self.ship.center_ship()
-
             # Pause the game briefly
             sleep(0.5)
         else:
             # End the game if no ships are left and make the mouse visible
             self.stats.game_active = False
             pygame.mouse.set_visible(True)
+            # Check if the current score is higher than the high score
+            if self.stats.score > self.stats.high_score:
+                self.stats.high_score = self.stats.score
+                # Save the new high score
+                self.stats.save_high_score(self.stats.high_score)  # Save high score here
 
     def _check_aliens_bottom(self):
         """Check if any aliens have reached the bottom of the screen."""
@@ -214,11 +276,18 @@ class AlienInvasion:
                 self._ship_hit()
                 break
 
+
     def _check_play_button(self, mouse_pos):
         """Start a new game when the player clicks Play."""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
             self._start_game()
+            # Set the buttons to None to make them disappear
+            # self.easy_button = None
+            # self.medium_button = None
+            # self.hard_button = None
+            # self.play_button = None
+
     # 3-1
     def _start_game(self):
         """Start a new game when the player presses 'P' or clicks Play."""
