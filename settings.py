@@ -17,7 +17,7 @@ class Settings:
         self.bullet_width = 3  # Bullet's width
         self.bullet_height = 15  # Bullet's height
         self.bullet_color = (60, 60, 60)  # Dark gray bullets
-        self.bullets_allowed = 3  # Number of bullets allowed on screen at once
+        self.bullets_allowed = 10  # Number of bullets allowed on screen at once
 
         # Alien settings
         self.alien_speed = 1.0  # Alien's speed

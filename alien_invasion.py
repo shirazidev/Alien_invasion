@@ -128,8 +128,15 @@ class AlienInvasion:
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullets group."""
         if len(self.bullets) < self.settings.bullets_allowed:
-            new_bullet = Bullet(self)
-            self.bullets.add(new_bullet)
+            # Create bullets with different vertical offsets
+            bullet_spacing = 10  # Define the spacing between bullets
+            new_bullet_center = Bullet(self, 0, 0)
+            new_bullet_top = Bullet(self, 0, -bullet_spacing)
+            new_bullet_bottom = Bullet(self, 0, bullet_spacing)
+
+            self.bullets.add(new_bullet_center)
+            self.bullets.add(new_bullet_top)
+            self.bullets.add(new_bullet_bottom)
 
     def _save_high_score(self):
         """Save the high score."""
